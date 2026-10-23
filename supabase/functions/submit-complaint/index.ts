@@ -183,6 +183,9 @@ Deno.serve(async (req) => {
     );
   }
 
+  const flagged = await ctx.admin.rpc('flag_recurrence', { p_complaint: complaint.id });
+  if (flagged.error) console.error('recurrence flag skipped', flagged.error.message);
+
   await notify(ctx.admin, {
     institutionId: inst,
     recipientId: me.id,

@@ -38,6 +38,10 @@ const NAV: Record<string, NavGroup[]> = {
       items: [
         { to: '/recurrence', label: 'Recurrence Radar', icon: 'radar' },
         { to: '/scorecard', label: 'Reliability Scorecard', icon: 'chart' },
+        { to: '/fairqueue', label: 'FairQueue', icon: 'chart' },
+        { to: '/graph', label: 'Dependencies', icon: 'route' },
+        { to: '/lab', label: 'Request Lab', icon: 'pen' },
+        { to: '/signals', label: 'Quiet Signals', icon: 'radar' },
       ],
     },
     {
@@ -48,6 +52,7 @@ const NAV: Record<string, NavGroup[]> = {
         { to: '/admin/routing', label: 'Routing', icon: 'route' },
         { to: '/admin/join-requests', label: 'Join Requests', icon: 'inbox' },
         { to: '/admin/settings', label: 'Settings', icon: 'gear' },
+        { to: '/admin/policies', label: 'Procedures', icon: 'inbox' },
       ],
     },
   ],
@@ -68,6 +73,10 @@ const NAV: Record<string, NavGroup[]> = {
         { to: '/intelligence', label: 'Intelligence', icon: 'spark' },
         { to: '/verification', label: 'Verification', icon: 'check' },
         { to: '/surveys', label: 'Surveys', icon: 'inbox' },
+        { to: '/fairqueue', label: 'FairQueue', icon: 'chart' },
+        { to: '/graph', label: 'Dependencies', icon: 'route' },
+        { to: '/lab', label: 'Request Lab', icon: 'pen' },
+        { to: '/signals', label: 'Quiet Signals', icon: 'radar' },
       ],
     },
     {
@@ -91,9 +100,11 @@ const NAV: Record<string, NavGroup[]> = {
     {
       title: 'Campus',
       items: [
+        { to: '/pulse', label: 'Campus Pulse', icon: 'map' },
         { to: '/community', label: 'Community', icon: 'users' },
         { to: '/student/updates', label: 'Incident Updates', icon: 'layers' },
         { to: '/student/surveys', label: 'Surveys', icon: 'inbox' },
+        { to: '/student/receipts', label: 'Decision Receipts', icon: 'check' },
         { to: '/notifications', label: 'Notifications', icon: 'bell' },
       ],
     },
@@ -138,19 +149,19 @@ const sideLink = (isActive: boolean) =>
 const TOP_NAV: Record<string, NavItem[]> = {
   admin: [
     { to: '/admin', label: 'Overview', icon: 'grid' },
-    { to: '/assistant', label: 'Flow', icon: 'flow' },
+    { to: '/pulse', label: 'Campus Pulse', icon: 'map' },
     { to: '/admin/complaints', label: 'Complaints', icon: 'ticket' },
     { to: '/incidents', label: 'Incidents', icon: 'layers' },
   ],
   teacher: [
     { to: '/staff', label: 'My Work', icon: 'grid' },
-    { to: '/assistant', label: 'Flow', icon: 'flow' },
+    { to: '/pulse', label: 'Campus Pulse', icon: 'map' },
     { to: '/staff/complaints', label: 'Queue', icon: 'ticket' },
     { to: '/incidents', label: 'Incidents', icon: 'layers' },
   ],
   student: [
     { to: '/student', label: 'My Complaints', icon: 'grid' },
-    { to: '/assistant', label: 'Flow', icon: 'flow' },
+    { to: '/pulse', label: 'Campus Pulse', icon: 'map' },
     { to: '/student/new', label: 'Report an Issue', icon: 'pen' },
     { to: '/student/updates', label: 'Updates', icon: 'layers' },
   ],

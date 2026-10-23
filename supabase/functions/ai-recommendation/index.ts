@@ -4,6 +4,7 @@ import { errorResponse, handleOptions, jsonResponse } from '../_shared/cors.ts';
 import { normalizeRecommendation } from '../_shared/recommendation.ts';
 import { getCallerContext, requireActive } from '../_shared/supabase.ts';
 import { aiConfigured, aiJson } from '../_shared/ai.ts';
+import { keywordOverlap } from '../_shared/upgrade.ts';
 
 const FALLBACK_MODEL = Deno.env.get('GEMINI_MODEL') || 'gemini-2.5-flash';
 
@@ -176,6 +177,8 @@ async function generate(ctx: any, complaint: any, level: 'public' | 'operational
     configured_departments: departments.map((item) => item.name),
     escalation_rules: sla ?? [],
     related_reports: related,
+    campus_memory: level === 'operational' ? await memorySnippets(ctx.admin, complaint) : [],
+    approved_policies: await policySnippets(ctx.admin, complaint),
     audience: level,
   };
 
@@ -207,7 +210,10 @@ Rules:
 - problem_summary, recommended_solution, action_steps, missing_information, and confidence_notes are shown to the person who reported it. Never put other people's complaints, names, or staff notes in those fields.
 - If audience is "public", leave hypotheses, investigation_steps, recurring_notes, and escalation_notes empty.
 - If audience is "operational", label hypotheses as unverified. Mention related_reports only inside recurring_notes, and only by the ticket numbers provided.
-- If escalation_rules is empty, say no escalation rule is configured instead of inventing one.`;
+- If escalation_rules is empty, say no escalation rule is configured instead of inventing one.
+- Cite a policy only when its title appears in approved_policies. If that list is empty, say no institutional procedure was retrieved.
+- A campus_memory outcome applies only to that earlier ticket. Do not assume the same fix will work here.
+- Do not change or imply a complaint status. A checklist is not a resolution.`;
 
   const r = await aiJson({
     system: instruction,
@@ -388,6 +394,40 @@ async function recordAction(ctx: any, complaint: any, level: 'public' | 'operati
     is_internal: false,
   });
   return jsonResponse(await payload(ctx.admin, complaint.id, level));
+}
+
+async function memorySnippets(admin: { from: (table: string) => any }, complaint: { id: string; institution_id: string; category: string; title: string }) {
+  const { data, error } = await admin
+    .from('complaints')
+    .select('ticket_number, title, status, resolution_notes, category')
+    .eq('institution_id', complaint.institution_id)
+    .eq('category', complaint.category)
+    .neq('id', complaint.id)
+    .in('status', ['resolved', 'closed'])
+    .order('resolved_at', { ascending: false })
+    .limit(5);
+  if (error || !data) return [];
+  return data.map((row: { ticket_number: string; title: string; status: string; resolution_notes: string | null }) => ({
+    ticket_number: row.ticket_number,
+    title: String(row.title).slice(0, 120),
+    status: row.status,
+    resolution_notes: row.resolution_notes ? String(row.resolution_notes).slice(0, 180) : null,
+  }));
+}
+
+async function policySnippets(admin: { from: (table: string) => any }, complaint: { institution_id: string; title: string; category: string; description?: string }) {
+  const { data, error } = await admin
+    .from('policy_documents')
+    .select('title, body')
+    .eq('institution_id', complaint.institution_id)
+    .eq('status', 'active')
+    .limit(12);
+  if (error || !data) return [];
+  const query = `${complaint.category} ${complaint.title} ${complaint.description ?? ''}`;
+  return data
+    .filter((row: { title: string; body: string }) => keywordOverlap(query, `${row.title} ${row.body}`))
+    .slice(0, 3)
+    .map((row: { title: string; body: string }) => ({ title: row.title, excerpt: String(row.body).slice(0, 500) }));
 }
 
 async function firstImage(admin: { from: (table: string) => any; storage: any }, complaintId: string, allowed: boolean) {

@@ -8,6 +8,7 @@ import { INCIDENT_STATUS_LABELS, INCIDENT_STATUS_STYLES } from '../../lib/types'
 import { Badge, Button, Card, CardBody, CardHeader, EmptyState, Field, Modal, Select, Spinner, Textarea } from '../../components/ui';
 import { ComplaintRow, CategoryBadge, StatusBadge, ComplaintTimeline } from '../../components/complaints';
 import { buildingForLocation } from '../../lib/campus';
+import { DossierButton } from '../../components/CampusUpgrade';
 import { cx, formatDateTime, timeAgo } from '../../lib/utils';
 
 const TABS = ['Overview', 'Tickets', 'Timeline', 'Investigation', 'Broadcasts'] as const;
@@ -161,6 +162,8 @@ export default function IncidentDetail() {
       </div>
 
       {tab === 'Overview' && (
+        <div className="space-y-5">
+        <DossierButton incidentId={incident.id} complaintId={members[0]?.id} />
         <div className="grid gap-5 lg:grid-cols-2">
           <Card className="p-6">
             <h3 className="text-base font-bold">Confirmed facts</h3>
@@ -188,6 +191,7 @@ export default function IncidentDetail() {
               ))}
             </ul>
           </Card>
+        </div>
         </div>
       )}
 

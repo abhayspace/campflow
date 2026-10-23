@@ -1,22 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
-import type { Complaint, ComplaintPriority, Department } from '../../lib/types';
+import type { Complaint, Department } from '../../lib/types';
 import { CATEGORIES, PRIORITY_LABELS, STATUS_LABELS } from '../../lib/types';
 import { ALL_BUILDINGS, buildingForLocation, hoursSince } from '../../lib/campus';
+import CampusScene from '../../components/CampusScene';
 import { DueBadge, EscalationBadge } from '../../components/intelligence';
 import { StatusBadge } from '../../components/complaints';
 import { Badge, Card, EmptyState, PageHeader, Select, TableSkeleton } from '../../components/ui';
 import { cx, formatDateTime, timeAgo } from '../../lib/utils';
 
-const SEVERITY: Record<ComplaintPriority, string> = {
-  urgent: '#dc2626', high: '#f97316', medium: '#f59e0b', low: '#25bb98',
-};
 const OPEN_STATUSES = ['new', 'assigned', 'in_progress', 'reopened'];
 
 export default function CampusPulse() {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [complaints, setComplaints] = useState<Complaint[] | null>(null);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -26,11 +24,20 @@ export default function CampusPulse() {
   const [dept, setDept] = useState('');
   const [range, setRange] = useState('30');
 
-  useEffect(() => {
-    supabase.from('complaints').select('*').order('created_at', { ascending: false }).limit(800)
-      .then(({ data }) => setComplaints((data ?? []) as Complaint[]));
-    supabase.from('departments').select('*').then(({ data }) => setDepartments(data ?? []));
+  const load = useCallback(async () => {
+    const [{ data: rows }, { data: depts }] = await Promise.all([
+      supabase.from('complaints').select('*').order('created_at', { ascending: false }).limit(800),
+      supabase.from('departments').select('*'),
+    ]);
+    setComplaints((rows ?? []) as Complaint[]);
+    setDepartments(depts ?? []);
   }, []);
+
+  useEffect(() => {
+    void load();
+    const timer = window.setInterval(() => void load(), 12000);
+    return () => window.clearInterval(timer);
+  }, [load]);
 
   const filtered = useMemo(() => {
     const cutoff = Date.now() - Number(range) * 86_400_000;
@@ -71,7 +78,7 @@ export default function CampusPulse() {
     <div className="space-y-5">
       <PageHeader
         title="Campus Pulse"
-        subtitle="Live operational view — every marker is a real ticket. Demo floor plan; locations are matched to buildings automatically."
+        subtitle="An isometric campus. Tap a building to open its floor. When a department starts work, someone follows the roads to that building."
       />
 
       {/* Filter bar */}
@@ -89,12 +96,10 @@ export default function CampusPulse() {
           <option value="">Any priority</option>
           {Object.entries(PRIORITY_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
         </Select>
-        {profile?.role === 'admin' && (
-          <Select value={dept} onChange={(e) => setDept(e.target.value)} className="!w-auto">
-            <option value="">All departments</option>
-            {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-          </Select>
-        )}
+        <Select value={dept} onChange={(e) => setDept(e.target.value)} className="!w-auto">
+          <option value="">All departments</option>
+          {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+        </Select>
         <Select value={range} onChange={(e) => setRange(e.target.value)} className="!w-auto">
           <option value="7">Last 7 days</option>
           <option value="30">Last 30 days</option>
@@ -122,51 +127,11 @@ export default function CampusPulse() {
       <div className="grid gap-5 lg:grid-cols-3">
         {/* Map */}
         <Card className="p-4 lg:col-span-2">
-          <svg viewBox="0 0 1000 640" className="w-full rounded-2xl bg-[#e9ecf4]" role="img" aria-label="Campus map — demo floor plan">
-            {/* paths + quad */}
-            <rect x="0" y="0" width="1000" height="640" rx="18" fill="#e9ecf4" />
-            <rect x="360" y="220" width="300" height="60" rx="10" fill="#dde2ee" />
-            <rect x="320" y="240" width="30" height="360" rx="8" fill="#dde2ee" />
-            <rect x="660" y="240" width="30" height="360" rx="8" fill="#dde2ee" />
-            <ellipse cx="505" cy="250" rx="80" ry="22" fill="#d2ecd9" />
-            {ALL_BUILDINGS.map((b) => {
-              const list = byBuilding.get(b.id) ?? [];
-              const openList = list.filter((c) => OPEN_STATUSES.includes(c.status));
-              const top = openList.sort((a, b2) =>
-                ['urgent', 'high', 'medium', 'low'].indexOf(a.priority) - ['urgent', 'high', 'medium', 'low'].indexOf(b2.priority))[0];
-              const isSel = selected === b.id;
-              const cxp = b.x + b.w / 2;
-
-              return (
-                <g key={b.id} onClick={() => setSelected(isSel ? null : b.id)} className="cursor-pointer">
-                  <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="14"
-                    fill={isSel ? '#e9e5fd' : '#ffffff'} stroke={isSel ? '#7a55ea' : '#d6dae8'} strokeWidth={isSel ? 3 : 1.5} />
-                  <text x={b.x + 14} y={b.y + 28} fontSize="17" fontWeight="700" fill="#334155">{b.name}</text>
-                  <text x={b.x + 14} y={b.y + 48} fontSize="12" fill="#94a3b8">
-                    {openList.length} open · {list.length} total
-                  </text>
-                  {openList.length > 0 && top && (
-                    <g>
-                      <circle cx={cxp} cy={b.y + b.h - 22} r="13" fill={SEVERITY[top.priority]} />
-                      <text x={cxp} y={b.y + b.h - 17.5} fontSize="12" fontWeight="800" fill="#fff" textAnchor="middle">
-                        {openList.length}
-                      </text>
-                      {top.safety_flagged && (
-                        <circle cx={cxp + 12} cy={b.y + b.h - 30} r="6" fill="#dc2626" stroke="#fff" strokeWidth="1.5" />
-                      )}
-                    </g>
-                  )}
-                </g>
-              );
-            })}
-          </svg>
+          <CampusScene complaints={filtered} departments={departments} selected={selected} onSelect={setSelected} />
           <div className="mt-3 flex flex-wrap items-center gap-4 text-[11px] text-slate-500">
-            <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-red-600" /> Urgent</span>
-            <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-orange-500" /> High</span>
-            <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-amber-400" /> Medium</span>
-            <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-accent-400" /> Low</span>
-            <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full border border-white bg-red-600" /> Safety flagged</span>
-            <span className="ml-auto">Click a building for detail</span>
+            <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm bg-[#1c1e22]" /> Name board on each building</span>
+            <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-[#ff7a45]" /> Count means open reports</span>
+            <span>Tap a building for its floor. Available desks have no open report.</span>
           </div>
         </Card>
 
@@ -208,7 +173,7 @@ export default function CampusPulse() {
                 {selectedComplaints.length === 0 && <EmptyState title="No tickets here" message="This area is clear for the selected filters." />}
                 <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
                   {selectedComplaints.map((c) => (
-                    <Link key={c.id} to={profile?.role === 'student' ? `/student/tickets/${c.id}` : `/staff/complaints/${c.id}`}
+                    <Link key={c.id} to={ticketHref(c, profile?.role, user?.id)}
                       className="block rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100 hover:bg-brand-50/60">
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="font-mono text-[11px] font-bold text-brand-600">{c.ticket_number}</span>
@@ -244,7 +209,12 @@ export default function CampusPulse() {
           </Card>
         </div>
       </div>
-      <p className="text-[11px] text-slate-400">Floor plan is a configurable sample layout for demo purposes — markers and counts reflect real complaint records only.</p>
+      <p className="text-[11px] text-slate-400">The plan is a sample layout. The people, the walks, and the counts come from complaint records you are allowed to see.</p>
     </div>
   );
+}
+
+function ticketHref(c: Complaint, role: string | undefined, userId: string | undefined) {
+  if (role === 'student') return c.created_by === userId ? `/student/tickets/${c.id}` : `/community/${c.id}`;
+  return `/staff/complaints/${c.id}`;
 }

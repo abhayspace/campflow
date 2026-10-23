@@ -76,3 +76,6 @@ verify_jwt = true
 
 [functions.ai-recommendation]
 verify_jwt = true
+
+[functions.campus-upgrade]
+verify_jwt = true

@@ -253,6 +253,8 @@ export interface PriorityExplanation {
   level: 'low' | 'medium' | 'high' | 'critical';
   factors: PriorityFactor[];
   recommended_action: string;
+  evaluated_at?: string;
+  votes_used?: boolean;
 }
 
 export interface AiAnalysis {

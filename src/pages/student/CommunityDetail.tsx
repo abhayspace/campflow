@@ -9,6 +9,7 @@ import type { Complaint, ComplaintEvent, CommunityVoteType, VoteCounts } from '.
 import { Badge, Button, Card, CardBody, EmptyState, Spinner } from '../../components/ui';
 import { errorMessage, formatDateTime, timeAgo } from '../../lib/utils';
 import GeminiSolution from '../../components/GeminiSolution';
+import { CampusMemoryPanel, DecisionReceipt } from '../../components/CampusUpgrade';
 
 export default function CommunityDetail() {
   const { id } = useParams();
@@ -159,6 +160,8 @@ export default function CommunityDetail() {
       </Card>
 
       <GeminiSolution complaintId={item.id} canAddDetail={mine} />
+      <CampusMemoryPanel complaintId={item.id} canLabel={false} />
+      <DecisionReceipt complaintId={item.id} />
 
       {events.length > 0 && (
         <Card>

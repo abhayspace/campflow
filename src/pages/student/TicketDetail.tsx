@@ -9,6 +9,7 @@ import { REQUEST_STATUS_LABELS, REQUEST_STATUS_STYLES } from '../../lib/types';
 import { Badge, Button, Card, CardBody, CardHeader, Modal, TableSkeleton, Textarea } from '../../components/ui';
 import { ComplaintMetaCard, ComplaintTimeline } from '../../components/complaints';
 import GeminiSolution from '../../components/GeminiSolution';
+import { TicketUpgrade } from '../../components/CampusUpgrade';
 import { PriorityPanel, VerificationBadge } from '../../components/intelligence';
 import { errorMessage } from '../../lib/utils';
 
@@ -155,6 +156,7 @@ export default function StudentTicketDetail() {
           </Card>
 
           <GeminiSolution complaintId={complaint.id} onChange={load} />
+          <TicketUpgrade complaintId={complaint.id} role="student" events={events} />
 
           {(canConfirm || canReopen) && (
             <Card>

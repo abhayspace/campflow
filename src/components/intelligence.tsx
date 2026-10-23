@@ -78,9 +78,10 @@ export function PriorityPanel({ complaintId }: { complaintId: string }) {
           </li>
         ))}
       </ul>
-      <p className="rounded-xl bg-brand-50 px-3 py-2 text-xs font-medium text-brand-800">
-        Recommended: {data.recommended_action}
+      <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700">
+        Suggested next step: {data.recommended_action}
       </p>
+      <p className="text-[11px] text-slate-400">Calculated {new Date(data.evaluated_at ?? Date.now()).toLocaleString()}. Community votes are not an input. Safety-flagged tickets escalate without waiting for this score.</p>
     </div>
   );
 }

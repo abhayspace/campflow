@@ -34,6 +34,12 @@ import VerificationQueue from './pages/intelligence/VerificationQueue';
 import RecurrenceRadar from './pages/intelligence/RecurrenceRadar';
 import Scorecard from './pages/intelligence/Scorecard';
 import EscalationCenter from './pages/intelligence/EscalationCenter';
+import FairQueue from './pages/intelligence/FairQueue';
+import DependencyGraph from './pages/intelligence/DependencyGraph';
+import RequestLab from './pages/intelligence/RequestLab';
+import QuietSignals from './pages/intelligence/QuietSignals';
+import Policies from './pages/admin/Policies';
+import Receipts from './pages/student/Receipts';
 
 import StaffDashboard from './pages/staff/StaffDashboard';
 import StaffQueue from './pages/staff/StaffQueue';
@@ -158,13 +164,14 @@ export default function App() {
               <Route path="/student/updates" element={<RequireRole role="student"><StudentUpdates /></RequireRole>} />
               <Route path="/student/surveys" element={<RequireRole role="student"><MySurveys /></RequireRole>} />
               <Route path="/student/surveys/:id" element={<RequireRole role="student"><SurveyRespond /></RequireRole>} />
+              <Route path="/student/receipts" element={<RequireRole role="student"><Receipts /></RequireRole>} />
 
               {/* Community feed — all signed-in roles */}
               <Route path="/community" element={<Community />} />
               <Route path="/community/:id" element={<CommunityDetail />} />
 
               {/* Shared intelligence (staff + admin) */}
-              <Route path="/pulse" element={<RequireRole role={['teacher', 'admin']}><CampusPulse /></RequireRole>} />
+              <Route path="/pulse" element={<CampusPulse />} />
               <Route path="/incidents" element={<RequireRole role={['teacher', 'admin']}><IncidentsList /></RequireRole>} />
               <Route path="/incidents/:id" element={<RequireRole role={['teacher', 'admin']}><IncidentDetail /></RequireRole>} />
               <Route path="/intelligence" element={<RequireRole role={['teacher', 'admin']}><IncidentIntelligence /></RequireRole>} />
@@ -172,6 +179,10 @@ export default function App() {
               <Route path="/recurrence" element={<RequireRole role="admin"><RecurrenceRadar /></RequireRole>} />
               <Route path="/scorecard" element={<RequireRole role="admin"><Scorecard /></RequireRole>} />
               <Route path="/escalation" element={<RequireRole role="admin"><EscalationCenter /></RequireRole>} />
+              <Route path="/fairqueue" element={<RequireRole role={['teacher', 'admin']}><FairQueue /></RequireRole>} />
+              <Route path="/graph" element={<RequireRole role={['teacher', 'admin']}><DependencyGraph /></RequireRole>} />
+              <Route path="/lab" element={<RequireRole role={['teacher', 'admin']}><RequestLab /></RequireRole>} />
+              <Route path="/signals" element={<RequireRole role={['teacher', 'admin']}><QuietSignals /></RequireRole>} />
 
               {/* Staff */}
               <Route path="/staff" element={<RequireRole role={['teacher', 'admin']}><StaffDashboard /></RequireRole>} />
@@ -189,6 +200,7 @@ export default function App() {
               <Route path="/admin/complaints" element={<RequireRole role="admin"><AdminComplaints /></RequireRole>} />
               <Route path="/admin/join-requests" element={<RequireRole role="admin"><AdminJoinRequests /></RequireRole>} />
               <Route path="/admin/settings" element={<RequireRole role="admin"><AdminSettings /></RequireRole>} />
+              <Route path="/admin/policies" element={<RequireRole role="admin"><Policies /></RequireRole>} />
             </Route>
 
             {/* Completing account setup (invite accept / join) */}

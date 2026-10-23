@@ -17,6 +17,7 @@ import { ComplaintMetaCard, ComplaintTimeline, StatusBadge } from '../../compone
 import { DueBadge, EscalationBadge, PriorityPanel, VerificationBadge } from '../../components/intelligence';
 import { AiAnalysisPanel, CommunitySignal, ModerationControl, RequestFlow, SolutionsPanel, SurveyLauncher } from '../../components/workspace';
 import GeminiSolution from '../../components/GeminiSolution';
+import { TicketUpgrade } from '../../components/CampusUpgrade';
 import { errorMessage } from '../../lib/utils';
 
 const NEXT_ACTIONS: Record<ComplaintStatus, { status: ComplaintStatus; label: string; variant?: 'accent' | 'primary' | 'secondary' }[]> = {
@@ -199,6 +200,7 @@ export default function StaffComplaintDetail() {
           </Card>
 
           <GeminiSolution complaintId={complaint.id} onChange={load} />
+          <TicketUpgrade complaintId={complaint.id} role={profile?.role} events={events} />
 
           {/* Duplicate suggestions */}
           {links.length > 0 && (
