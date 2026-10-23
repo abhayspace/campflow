@@ -1,0 +1,317 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/manrope-400.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/manrope-600.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/manrope-700.ttf') format('truetype');
+  font-weight: 700 800;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --color-brand-50: #f3f1fe;
+  --color-brand-100: #e9e5fd;
+  --color-brand-200: #d4ccfb;
+  --color-brand-300: #b6a6f7;
+  --color-brand-400: #957bf1;
+  --color-brand-500: #7a55ea;
+  --color-brand-600: #6538de;
+  --color-brand-700: #542ac4;
+  --color-brand-800: #452a9e;
+  --color-brand-900: #392b7e;
+  --color-brand-950: #241955;
+
+  --color-accent-50: #effcf8;
+  --color-accent-100: #c9f4e7;
+  --color-accent-200: #93e8d1;
+  --color-accent-300: #56d5b6;
+  --color-accent-400: #25bb98;
+  --color-accent-500: #0fa07f;
+  --color-accent-600: #088167;
+  --color-accent-700: #096754;
+  --color-accent-800: #0b5344;
+  --color-accent-900: #0c4539;
+
+  --color-canvas: #eef0f6;
+
+  /* Onboarding pastels — shared with the workspace so cards feel like one product. */
+  --color-candy-lavender: #e3dafe;
+  --color-candy-yellow: #ffe88f;
+  --color-candy-pink: #f8def9;
+  --color-candy-peach: #ff997a;
+  --color-candy-mint: #d5f1df;
+  --color-candy-ink: #171716;
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  @apply bg-[#eef0f6] text-slate-900;
+}
+
+/* Subtle entrance for cards/lists */
+@keyframes cc-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.cc-animate {
+  animation: cc-fade-up 0.25s ease-out both;
+}
+
+/* Landing page hero backdrop */
+.cc-hero-bg {
+  background:
+    radial-gradient(60rem 30rem at 80% -10%, rgba(37, 187, 152, 0.18), transparent 60%),
+    radial-gradient(50rem 26rem at 10% 0%, rgba(122, 85, 234, 0.25), transparent 60%),
+    linear-gradient(160deg, #241955 0%, #392b7e 55%, #542ac4 100%);
+}
+
+.cc-grid-pattern {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* Workspace dark mode. Neutral greys, scoped so the onboarding page stays light. */
+.cf-app.dark {
+  color-scheme: dark;
+  background: #141414;
+  color: #f5f5f5;
+}
+.cf-app.dark .bg-\[\#eef0f6\],
+.cf-app.dark .bg-white {
+  background-color: #222222;
+}
+.cf-app.dark .bg-slate-50,
+.cf-app.dark .bg-slate-50\/80,
+.cf-app.dark .bg-slate-50\/60 {
+  background-color: #2a2a2a;
+}
+.cf-app.dark .bg-slate-100 {
+  background-color: #333333;
+}
+.cf-app.dark .bg-brand-50,
+.cf-app.dark .bg-brand-50\/60,
+.cf-app.dark .bg-brand-50\/70 {
+  background-color: #2e2e2e;
+}
+.cf-app.dark .text-slate-900,
+.cf-app.dark .text-slate-800 {
+  color: #f5f5f5;
+}
+.cf-app.dark .text-slate-700,
+.cf-app.dark .text-slate-600 {
+  color: #d4d4d4;
+}
+.cf-app.dark .text-slate-500 {
+  color: #a3a3a3;
+}
+.cf-app.dark .text-slate-400 {
+  color: #8a8a8a;
+}
+.cf-app.dark .text-brand-800,
+.cf-app.dark .text-brand-700,
+.cf-app.dark .text-brand-600 {
+  color: #d4d4d4;
+}
+.cf-app.dark .border-slate-50,
+.cf-app.dark .border-slate-100,
+.cf-app.dark .border-slate-200,
+.cf-app.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #3a3a3a;
+}
+.cf-app.dark .border-slate-300 {
+  border-color: #4a4a4a;
+}
+.cf-app.dark .ring-slate-100,
+.cf-app.dark .ring-slate-200 {
+  --tw-ring-color: #3a3a3a;
+}
+.cf-app.dark .hover\:bg-white:hover,
+.cf-app.dark .hover\:bg-slate-50:hover,
+.cf-app.dark .hover\:bg-slate-100:hover {
+  background-color: #333333;
+}
+.cf-app.dark .hover\:bg-candy-lavender:hover,
+.cf-app.dark .hover\:bg-candy-lavender\/80:hover,
+.cf-app.dark .hover\:bg-candy-lavender\/70:hover,
+.cf-app.dark .hover\:bg-candy-lavender\/60:hover,
+.cf-app.dark .hover\:bg-brand-50\/60:hover,
+.cf-app.dark .hover\:bg-brand-50\/70:hover {
+  background-color: #3a3a3a;
+}
+.cf-app.dark .hover\:text-slate-900:hover,
+.cf-app.dark .hover\:text-slate-700:hover {
+  color: #f5f5f5;
+}
+.cf-app.dark .bg-candy-lavender {
+  background-color: #333333;
+  color: #f5f5f5;
+}
+
+/* Darker neutral surfaces */
+.cf-app.dark .bg-slate-200,
+.cf-app.dark .bg-slate-200\/70 {
+  background-color: #3a3a3a;
+}
+.cf-app.dark .bg-slate-300 {
+  background-color: #454545;
+}
+.cf-app.dark .border-slate-900,
+.cf-app.dark .border-slate-800 {
+  border-color: #4a4a4a;
+}
+
+/* Tinted surfaces — keep the hue, darken the surface */
+.cf-app.dark .bg-sky-50,
+.cf-app.dark .bg-sky-50\/60,
+.cf-app.dark .bg-sky-50\/70 {
+  background-color: #1e2833;
+}
+.cf-app.dark .bg-emerald-50,
+.cf-app.dark .bg-emerald-50\/70,
+.cf-app.dark .bg-emerald-100 {
+  background-color: #16332a;
+}
+.cf-app.dark .bg-red-50,
+.cf-app.dark .bg-red-100 {
+  background-color: #38211f;
+}
+.cf-app.dark .bg-amber-50,
+.cf-app.dark .bg-amber-100 {
+  background-color: #3a2f17;
+}
+.cf-app.dark .bg-orange-100,
+.cf-app.dark .bg-orange-50 {
+  background-color: #392617;
+}
+.cf-app.dark .bg-violet-50,
+.cf-app.dark .bg-violet-50\/50,
+.cf-app.dark .bg-violet-50\/60,
+.cf-app.dark .bg-violet-50\/70,
+.cf-app.dark .bg-violet-100 {
+  background-color: #2d2740;
+}
+.cf-app.dark .bg-brand-100 {
+  background-color: #322e4a;
+}
+.cf-app.dark .bg-accent-50,
+.cf-app.dark .bg-accent-50\/50 {
+  background-color: #1e2f2a;
+}
+.cf-app.dark .bg-candy-yellow { background-color: #3d3516; }
+.cf-app.dark .bg-candy-pink { background-color: #38252f; }
+.cf-app.dark .bg-candy-mint { background-color: #16332a; }
+.cf-app.dark .bg-candy-peach { background-color: #392617; }
+
+/* Dark-on-light text colors -> light readable equivalents */
+.cf-app.dark .text-red-500,
+.cf-app.dark .text-red-600,
+.cf-app.dark .text-red-700,
+.cf-app.dark .text-red-800,
+.cf-app.dark .text-red-900 {
+  color: #fca5a5;
+}
+.cf-app.dark .text-emerald-600,
+.cf-app.dark .text-emerald-700,
+.cf-app.dark .text-emerald-800,
+.cf-app.dark .text-emerald-900 {
+  color: #6ee7b7;
+}
+.cf-app.dark .text-amber-600,
+.cf-app.dark .text-amber-700,
+.cf-app.dark .text-amber-800 {
+  color: #fcd34d;
+}
+.cf-app.dark .text-orange-600,
+.cf-app.dark .text-orange-700 {
+  color: #fdba74;
+}
+.cf-app.dark .text-sky-600,
+.cf-app.dark .text-sky-700 {
+  color: #7dd3fc;
+}
+.cf-app.dark .text-violet-600,
+.cf-app.dark .text-violet-700 {
+  color: #c4b5fd;
+}
+.cf-app.dark .text-accent-700 {
+  color: #56d5b6;
+}
+.cf-app.dark .text-brand-900 {
+  color: #d4d4d4;
+}
+
+/* Colored rings/borders -> dark hue counterparts */
+.cf-app.dark .ring-emerald-200,
+.cf-app.dark .border-emerald-200 {
+  --tw-ring-color: #24503f;
+  border-color: #24503f;
+}
+.cf-app.dark .ring-red-200,
+.cf-app.dark .border-red-200 {
+  --tw-ring-color: #55322d;
+  border-color: #55322d;
+}
+.cf-app.dark .ring-amber-200,
+.cf-app.dark .border-amber-200 {
+  --tw-ring-color: #564a24;
+  border-color: #564a24;
+}
+.cf-app.dark .ring-orange-200,
+.cf-app.dark .border-orange-200 {
+  --tw-ring-color: #52402a;
+  border-color: #52402a;
+}
+.cf-app.dark .ring-brand-200,
+.cf-app.dark .border-brand-200 {
+  --tw-ring-color: #453d6e;
+  border-color: #453d6e;
+}
+.cf-app.dark .ring-sky-100,
+.cf-app.dark .ring-sky-200,
+.cf-app.dark .border-sky-200 {
+  --tw-ring-color: #2b3c4e;
+  border-color: #2b3c4e;
+}
+.cf-app.dark .ring-violet-200,
+.cf-app.dark .border-violet-200 {
+  --tw-ring-color: #453d6e;
+  border-color: #453d6e;
+}
+.cf-app.dark .ring-brand-300,
+.cf-app.dark .border-brand-300 {
+  --tw-ring-color: #453d6e;
+  border-color: #453d6e;
+}
+
+.cf-app.dark input,
+.cf-app.dark select,
+.cf-app.dark textarea {
+  color-scheme: dark;
+}
